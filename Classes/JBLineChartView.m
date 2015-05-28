@@ -1330,8 +1330,34 @@ static UIColor *kJBLineChartViewDefaultDotSelectionColor = nil;
         shapeFillLayer.path = fillPath.CGPath;
         shapeFillLayer.frame = self.bounds;
         
-        [self.layer addSublayer:shapeFillLayer];
-        [self.layer addSublayer:shapeLayer];
+        // CHANGES ADDED BY HAND
+#pragma mark - Changes added by hand
+        CAGradientLayer *gradientLayer = [CAGradientLayer new];
+        gradientLayer.frame = self.bounds;
+        gradientLayer.startPoint = CGPointMake(0.0, 0.0);
+        gradientLayer.endPoint = CGPointMake(1.0, 1.0);
+        UIColor *startColor = [UIColor colorWithRed:223/225.0 green:0/225.0 blue:128/225.0 alpha:1.0];
+        UIColor *midColor = [UIColor colorWithRed:236/255.0 green:86/255.0 blue:86/255.0 alpha:1.0];
+        UIColor *endColor = [UIColor colorWithRed:237/255.0 green:161/255.0 blue:48/255.0 alpha:1.0];
+        gradientLayer.colors = @[(id)startColor.CGColor, (id)midColor.CGColor, (id)endColor.CGColor];
+        
+        gradientLayer.mask = shapeLayer;
+        [self.layer addSublayer:gradientLayer];
+//        [self.layer addSublayer:shapeLayer];
+        
+        CAGradientLayer *gradientFillLayer = [CAGradientLayer new];
+        gradientFillLayer.frame = self.bounds;
+        gradientFillLayer.startPoint = CGPointMake(0.0, 0.0);
+        gradientFillLayer.endPoint = CGPointMake(1.0, 1.0);
+        UIColor *startFillColor = [UIColor colorWithRed:223/225.0 green:0/225.0 blue:128/225.0 alpha:0.5];
+        UIColor *midFillColor = [UIColor colorWithRed:236/255.0 green:86/255.0 blue:86/255.0 alpha:0.5];
+        UIColor *endFillColor = [UIColor colorWithRed:237/255.0 green:161/255.0 blue:48/255.0 alpha:0.5];
+        gradientFillLayer.colors = @[(id)startFillColor.CGColor, (id)midFillColor.CGColor, (id)endFillColor.CGColor];
+        
+        gradientFillLayer.mask = shapeFillLayer;
+        [self.layer addSublayer:gradientFillLayer];
+//        [self.layer addSublayer:shapeFillLayer];
+        // END OF CHANGES
 
         lineIndex++;
     }
