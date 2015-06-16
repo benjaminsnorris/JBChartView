@@ -25,7 +25,7 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineStyle){
 };
 
 /**
- * Current support for two line styles: solid (default) and dashed.
+ * Current support for two line color styles: solid (default) and gradient.
  */
 typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
     /**
