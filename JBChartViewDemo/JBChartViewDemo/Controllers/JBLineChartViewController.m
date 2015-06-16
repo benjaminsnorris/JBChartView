@@ -275,6 +275,11 @@ NSString * const kJBLineChartViewControllerNavButtonViewKey = @"view";
     return (lineIndex == JBLineChartLineSolid) ? JBLineChartViewLineStyleSolid : JBLineChartViewLineStyleDashed;
 }
 
+- (JBLineChartViewLineColorStyle)lineChartView:(JBLineChartView *)lineChartView lineColorStyleForLineAtLineIndex:(NSUInteger)lineIndex
+{
+    return (lineIndex == JBLineChartLineSolid) ? JBLineChartViewLineColorStyleSolid : JBLineChartViewLineColorStyleGradient;
+}
+
 #pragma mark - Buttons
 
 - (void)chartToggleButtonPressed:(id)sender

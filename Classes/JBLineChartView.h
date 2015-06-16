@@ -181,14 +181,14 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
  *  Returns the gradient layer to be used for a particular line at lineIndex within the chart.
  *  Alpha of gradient is controlled by the color returned from lineChartView:colorForLineAtLineIndex:
  *
- *  Default: black to dark gray.
+ *  Default: black to light gray.
  *
  *  @param lineChartView    The line chart object requesting this information.
  *  @param lineIndex        An index number identifying a line in the chart.
  *
  *  @return The gradient layer to be used as a mask for the line in the chart.
  */
-- (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView gradientForLineAtIndex:(NSUInteger)lineIndex;
+- (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView gradientForLineAtLineIndex:(NSUInteger)lineIndex;
 
 /**
  *  Returns the fill color of particular line at lineIndex within the chart.
@@ -214,7 +214,7 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
  *
  *  @return The fill color to show under a line in the chart.
  */
-- (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView fillGradientForLineAtIndex:(NSUInteger)lineIndex;
+- (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView fillGradientForLineAtLineIndex:(NSUInteger)lineIndex;
 
 /**
  *  Returns the color of a particular dot in a line at lineIndex within the chart.
@@ -300,14 +300,14 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
  *  Returns the gradient layer to be overlayed on a line during touch events.
  *  Alpha of gradient is controlled by the color returned from lineChartView:selectionColorForLineAtLineIndex:
  *
- *  Default: white to light gray.
+ *  Default: white to dark gray.
  *
  *  @param lineChartView    The line chart object requesting this information.
  *  @param lineIndex        An index number identifying a line in the chart.
  *
  *  @return The gradient layer to be used as a mask for the line in the chart.
  */
-- (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView selectionGradientForLineAtIndex:(NSUInteger)lineIndex;
+- (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView selectionGradientForLineAtLineIndex:(NSUInteger)lineIndex;
 
 /**
  *  Returns the selection fill color to be overlayed under a line within the chart during touch events.
@@ -333,7 +333,7 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
  *
  *  @return The fill color to show under a line in the chart.
  */
-- (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView selectionFillGradientForLineAtIndex:(NSUInteger)lineIndex;
+- (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView selectionFillGradientForLineAtLineIndex:(NSUInteger)lineIndex;
 
 /**
  *  Returns the selection color to be overlayed on a line within the chart during touch events.

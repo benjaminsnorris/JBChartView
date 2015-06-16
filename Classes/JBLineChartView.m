@@ -218,10 +218,10 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionEndColor = nil;
         kJBLineChartViewDefaultDotColor = [UIColor blackColor];
         kJBLineChartViewDefaultDotSelectionColor = [UIColor whiteColor];
         kJBLineChartViewDefaultGradientStartColor = [UIColor blackColor];
-        kJBLineChartViewDefaultGradientEndColor = [UIColor darkGrayColor];
+        kJBLineChartViewDefaultGradientEndColor = [UIColor lightGrayColor];
         kJBLineChartViewDefaultGradientFillColor = [UIColor clearColor];
         kJBLineChartViewDefaultGradientSelectionStartColor = [UIColor whiteColor];
-        kJBLineChartViewDefaultGradientSelectionEndColor = [UIColor lightGrayColor];
+        kJBLineChartViewDefaultGradientSelectionEndColor = [UIColor darkGrayColor];
 	}
 }
 
@@ -610,8 +610,8 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionEndColor = nil;
 
 - (CAGradientLayer *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView gradientForLineAtLineIndex:(NSUInteger)lineIndex
 {
-    if ([self.delegate respondsToSelector:@selector(lineChartLinesView:gradientForLineAtLineIndex:)]) {
-        return [self.delegate lineChartView:self gradientForLineAtIndex:lineIndex];
+    if ([self.delegate respondsToSelector:@selector(lineChartView:gradientForLineAtLineIndex:)]) {
+        return [self.delegate lineChartView:self gradientForLineAtLineIndex:lineIndex];
     }
     CAGradientLayer *gradient = [self defaultGradientLayer];
     gradient.colors = @[(id)kJBLineChartViewDefaultGradientStartColor.CGColor, (id)kJBLineChartViewDefaultGradientEndColor.CGColor];
@@ -620,8 +620,8 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionEndColor = nil;
 
 - (CAGradientLayer *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView selectionGradientForLineAtLineIndex:(NSUInteger)lineIndex
 {
-    if ([self.delegate respondsToSelector:@selector(lineChartLinesView:selectionGradientForLineAtLineIndex:)]) {
-        return [self.delegate lineChartView:self selectionGradientForLineAtIndex:lineIndex];
+    if ([self.delegate respondsToSelector:@selector(lineChartView:selectionGradientForLineAtLineIndex:)]) {
+        return [self.delegate lineChartView:self selectionGradientForLineAtLineIndex:lineIndex];
     }
     CAGradientLayer *gradient = [self defaultGradientLayer];
     gradient.colors = @[(id)kJBLineChartViewDefaultGradientSelectionStartColor.CGColor, (id)kJBLineChartViewDefaultGradientSelectionEndColor.CGColor];
@@ -648,8 +648,8 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionEndColor = nil;
 
 - (CAGradientLayer *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView fillGradientForLineAtLineIndex:(NSUInteger)lineIndex
 {
-    if ([self.delegate respondsToSelector:@selector(lineChartView:fillGradientForLineAtIndex:)]) {
-        return [self.delegate lineChartView:self fillGradientForLineAtIndex:lineIndex];
+    if ([self.delegate respondsToSelector:@selector(lineChartView:fillGradientForLineAtLineIndex:)]) {
+        return [self.delegate lineChartView:self fillGradientForLineAtLineIndex:lineIndex];
     }
     CAGradientLayer *gradient = [self defaultGradientLayer];
     gradient.colors = @[(id)kJBLineChartViewDefaultGradientFillColor.CGColor];
@@ -657,8 +657,8 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionEndColor = nil;
 }
 
 - (CAGradientLayer *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView selectionFillGradientForLineAtLineIndex:(NSUInteger)lineIndex {
-    if ([self.delegate respondsToSelector:@selector(lineChartView:selectionFillGradientForLineAtIndex:)]) {
-        return [self.delegate lineChartView:self selectionFillGradientForLineAtIndex:lineIndex];
+    if ([self.delegate respondsToSelector:@selector(lineChartView:selectionFillGradientForLineAtLineIndex:)]) {
+        return [self.delegate lineChartView:self selectionFillGradientForLineAtLineIndex:lineIndex];
     }
     CAGradientLayer *gradient = [self defaultGradientLayer];
     gradient.colors = @[(id)kJBLineChartViewDefaultGradientFillColor.CGColor];
@@ -1373,6 +1373,9 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionEndColor = nil;
         NSAssert([self.delegate respondsToSelector:@selector(lineChartLinesView:fillColorForLineAtLineIndex:)], @"JBLineChartLinesView // delegate must implement - (UIColor *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView fillColorForLineAtLineIndex:(NSUInteger)lineIndex");
         shapeFillLayer.fillColor = [self.delegate lineChartLinesView:self fillColorForLineAtLineIndex:lineIndex].CGColor;
         
+        NSAssert([self.delegate respondsToSelector:@selector(lineChartLinesView:lineColorStyleForLineAtLineIndex:)], @"JBLineChartLinesView // delegate must implement - (JBLineChartViewLineColorStyle)lineChartLineView:(JBLineChartLinesView *)lineChartLinesView lineColorStyleForLineAtLineIndex:(NSUInteger)lineIndex");
+        shapeLayer.lineColorStyle = [self.delegate lineChartLinesView:self lineColorStyleForLineAtLineIndex:lineIndex];
+
         if (smoothLine == YES)
         {
             shapeLayer.lineCap = kCALineCapRound;
@@ -1401,12 +1404,23 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionEndColor = nil;
             [fillPath addLineToPoint:CGPointMake(lastXPosition, self.bounds.size.height - padding)];
             [fillPath addLineToPoint:CGPointMake(firstXPosition, self.bounds.size.height - padding)];
         }
-
+        
         shapeFillLayer.path = fillPath.CGPath;
         shapeFillLayer.frame = self.bounds;
-        
-        [self.layer addSublayer:shapeFillLayer];
-        [self.layer addSublayer:shapeLayer];
+
+        if (shapeLayer.lineColorStyle == JBLineChartViewLineColorStyleGradient)
+        {
+            NSAssert([self.delegate respondsToSelector:@selector(lineChartLinesView:gradientForLineAtLineIndex:)], @"JBLineChartLinesView // delegate must implement - (CAGradientLayer *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView gradientForLineAtLineIndex:(NSUInteger)lineIndex");
+            CAGradientLayer *lineGradient = [self.delegate lineChartLinesView:self gradientForLineAtLineIndex:lineIndex];
+            lineGradient.frame = shapeLayer.frame;
+            lineGradient.mask = shapeLayer;
+            [self.layer addSublayer:lineGradient];
+        }
+        else // shapeLayer.lineColorStyle == JBLineChartViewLineColorStyleSolid (default)
+        {
+            [self.layer addSublayer:shapeFillLayer];
+            [self.layer addSublayer:shapeLayer];
+        }
 
         lineIndex++;
     }
