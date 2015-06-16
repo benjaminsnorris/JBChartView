@@ -207,7 +207,7 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
  *  Returns the gradient layer to be used for a fill of a particular line at lineIndex within the chart.
  *  Alpha of gradient is controlled by the color returned from lineChartView:fillColorForLineAtLineIndex:
  *
- *  Default: clear to clear.
+ *  Default: white to light gray.
  *
  *  @param lineChartView    The line chart object requesting this information.
  *  @param lineIndex        An index number identifying a line in the chart.
