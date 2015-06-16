@@ -629,9 +629,7 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionFillEndColor = nil;
     if ([self.delegate respondsToSelector:@selector(lineChartView:selectionGradientForLineAtLineIndex:)]) {
         return [self.delegate lineChartView:self selectionGradientForLineAtLineIndex:lineIndex];
     }
-    CAGradientLayer *gradient = [self defaultGradientLayer];
-    gradient.colors = @[(id)kJBLineChartViewDefaultGradientSelectionStartColor.CGColor, (id)kJBLineChartViewDefaultGradientSelectionEndColor.CGColor];
-    return gradient;
+    return [self.delegate lineChartView:self gradientForLineAtLineIndex:lineIndex];
 }
 
 - (UIColor *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView fillColorForLineAtLineIndex:(NSUInteger)lineIndex
@@ -666,9 +664,7 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionFillEndColor = nil;
     if ([self.delegate respondsToSelector:@selector(lineChartView:selectionFillGradientForLineAtLineIndex:)]) {
         return [self.delegate lineChartView:self selectionFillGradientForLineAtLineIndex:lineIndex];
     }
-    CAGradientLayer *gradient = [self defaultGradientLayer];
-    gradient.colors = @[(id)kJBLineChartViewDefaultGradientSelectionFillStartColor.CGColor, (id)kJBLineChartViewDefaultGradientSelectionFillEndColor.CGColor];
-    return gradient;
+    return [self.delegate lineChartView:self fillGradientForLineAtLineIndex:lineIndex];
 }
 
 - (CAGradientLayer *)defaultGradientLayer {
