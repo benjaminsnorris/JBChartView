@@ -1457,6 +1457,9 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionFillEndColor = nil;
     __weak JBLineChartLinesView* weakSelf = self;
     
     dispatch_block_t adjustLines = ^{
+        NSMutableArray *layersToReplace = [NSMutableArray array];
+        NSString * const oldLayerKey = @"oldLayer";
+        NSString * const newLayerKey = @"newLayer";
         for (CALayer *layer in [weakSelf.layer sublayers])
         {
             if ([layer isKindOfClass:[JBLineLayer class]])
@@ -1489,6 +1492,56 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionFillEndColor = nil;
                     ((JBFillLayer *)layer).opacity = (weakSelf.selectedLineIndex == kJBLineChartLinesViewUnselectedLineIndex) ? 1.0f : kJBLineChartLinesViewDefaultDimmedOpacity;
                 }
             }
+            else if ([layer isKindOfClass:[CAGradientLayer class]])
+            {
+                if ([layer.mask isKindOfClass:[JBLineLayer class]])
+                {
+                    JBLineLayer *lineLayer = (JBLineLayer *)layer.mask;
+                    if (lineLayer.tag == weakSelf.selectedLineIndex)
+                    {
+                        NSAssert([self.delegate respondsToSelector:@selector(lineChartLinesView:selectionGradientForLineAtLineIndex:)], @"JBLineChartLinesView // delegate must implement - (CAGradientLayer *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView selectionGradientForLineAtLineIndex:(NSUInteger)lineIndex");
+                        CAGradientLayer *selectedGradient = [self.delegate lineChartLinesView:self selectionGradientForLineAtLineIndex:lineLayer.tag];
+                        selectedGradient.frame = layer.frame;
+                        selectedGradient.mask = layer.mask;
+                        selectedGradient.opacity = 1.0f;
+                        [layersToReplace addObject:@{oldLayerKey: layer, newLayerKey: selectedGradient}];
+                    }
+                    else
+                    {
+                        NSAssert([self.delegate respondsToSelector:@selector(lineChartLinesView:gradientForLineAtLineIndex:)], @"JBLineChartLinesView // delegate must implement - (CAGradientLayer *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView gradientForLineAtLineIndex:(NSUInteger)lineIndex");
+                        CAGradientLayer *unselectedGradient = [self.delegate lineChartLinesView:self gradientForLineAtLineIndex:lineLayer.tag];
+                        unselectedGradient.frame = layer.frame;
+                        unselectedGradient.mask = layer.mask;
+                        unselectedGradient.opacity = (weakSelf.selectedLineIndex == kJBLineChartLinesViewUnselectedLineIndex) ? 1.0f : kJBLineChartLinesViewDefaultDimmedOpacity;
+                        [layersToReplace addObject:@{oldLayerKey: layer, newLayerKey: unselectedGradient}];
+                    }
+                }
+                else if ([layer.mask isKindOfClass:[JBFillLayer class]])
+                {
+                    JBFillLayer *fillLayer = (JBFillLayer *)layer.mask;
+                    if (fillLayer.tag == weakSelf.selectedLineIndex)
+                    {
+                        NSAssert([self.delegate respondsToSelector:@selector(lineChartLinesView:selectionFillGradientForLineAtLineIndex:)], @"JBLineChartLinesView // delegate must implement - (CAGradientLayer *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView selectionFillGradientForLineAtLineIndex:(NSUInteger)lineIndex");
+                        CAGradientLayer *selectedFillGradient = [self.delegate lineChartLinesView:self selectionFillGradientForLineAtLineIndex:fillLayer.tag];
+                        selectedFillGradient.frame = layer.frame;
+                        selectedFillGradient.mask = layer.mask;
+                        selectedFillGradient.opacity = 1.0f;
+                        [layersToReplace addObject:@{oldLayerKey: layer, newLayerKey: selectedFillGradient}];
+                    }
+                    else
+                    {
+                        NSAssert([self.delegate respondsToSelector:@selector(lineChartLinesView:fillGradientForLineAtLineIndex:)], @"JBLineChartLinesView // delegate must implement - (CAGradientLayer *)lineChartLinesView:(JBLineChartLinesView *)lineChartLinesView fillGradientForLineAtLineIndex:(NSUInteger)lineIndex");
+                        CAGradientLayer *unselectedFillGradient = [self.delegate lineChartLinesView:self fillGradientForLineAtLineIndex:fillLayer.tag];
+                        unselectedFillGradient.frame = layer.frame;
+                        unselectedFillGradient.mask = layer.mask;
+                        unselectedFillGradient.opacity = (weakSelf.selectedLineIndex == kJBLineChartLinesViewUnselectedLineIndex) ? 1.0f : kJBLineChartLinesViewDefaultDimmedOpacity;
+                        [layersToReplace addObject:@{oldLayerKey: layer, newLayerKey: unselectedFillGradient}];
+                    }
+                }
+            }
+        }
+        for (NSDictionary *layerPair in layersToReplace) {
+            [weakSelf.layer replaceSublayer:layerPair[oldLayerKey] with:layerPair[newLayerKey]];
         }
     };
 
