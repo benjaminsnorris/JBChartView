@@ -241,31 +241,28 @@ NSString * const kJBLineChartViewControllerNavButtonViewKey = @"view";
 }
 
 - (UIColor *)lineChartView:(JBLineChartView *)lineChartView fillColorForLineAtLineIndex:(NSUInteger)lineIndex {
-    return (lineIndex == JBLineChartLineSolid) ? [UIColor clearColor] : [UIColor colorWithWhite:1.0 alpha:0.5];
+    return (lineIndex == JBLineChartLineSolid) ? kJBColorLineChartDefaultSolidFillColor : kJBColorLineChartDefaultDashedFillColor;
 }
 
 - (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView gradientForLineAtLineIndex:(NSUInteger)lineIndex {
-    return [self welbeColoredGradient];
+    return (lineIndex == JBLineChartLineSolid) ? nil : [self exampleGradient];
 }
 
 - (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView fillGradientForLineAtLineIndex:(NSUInteger)lineIndex {
-    return [self welbeColoredGradient];
+    return (lineIndex == JBLineChartLineSolid) ? nil : [self exampleGradient];
 }
 
-- (CAGradientLayer *)welbeColoredGradient {
+- (CAGradientLayer *)exampleGradient {
     CAGradientLayer *gradient = [CAGradientLayer new];
     gradient.startPoint = CGPointMake(0.0, 0.0);
     gradient.endPoint = CGPointMake(1.0, 0.0);
-    UIColor *startColor = [UIColor colorWithRed:223/255.0 green:0/255.0 blue:128/255.0 alpha:1.0];
-    UIColor *midColor = [UIColor colorWithRed:236/255.0 green:86/255.0 blue:86/255.0 alpha:1.0];
-    UIColor *endColor = [UIColor colorWithRed:237/255.0 green:161/255.0 blue:48/255.0 alpha:1.0];
-    gradient.colors = @[(id)startColor.CGColor, (id)midColor.CGColor, (id)endColor.CGColor];
+    gradient.colors = @[(id)kJBColorLineChartDefaultGradientStartColor.CGColor, (id)kJBColorLineChartDefaultGradientEndColor.CGColor];
     return gradient;
 }
 
 - (UIColor *)lineChartView:(JBLineChartView *)lineChartView colorForDotAtHorizontalIndex:(NSUInteger)horizontalIndex atLineIndex:(NSUInteger)lineIndex
 {
-    return (lineIndex == JBLineChartLineSolid) ? kJBColorLineChartDefaultSolidLineColor: [UIColor colorWithRed:237/255.0 green:161/255.0 blue:48/255.0 alpha:1.0];
+    return (lineIndex == JBLineChartLineSolid) ? kJBColorLineChartDefaultSolidLineColor: kJBColorLineChartDefaultDashedLineColor;
 }
 
 - (CGFloat)lineChartView:(JBLineChartView *)lineChartView widthForLineAtLineIndex:(NSUInteger)lineIndex

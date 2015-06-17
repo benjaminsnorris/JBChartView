@@ -670,7 +670,7 @@ static UIColor *kJBLineChartViewDefaultGradientSelectionFillEndColor = nil;
 - (CAGradientLayer *)defaultGradientLayer {
     CAGradientLayer *gradient = [CAGradientLayer new];
     gradient.startPoint = CGPointMake(kJBLineChartViewDefaultStartPoint, kJBLineChartViewDefaultStartPoint);
-    gradient.endPoint = CGPointMake(kJBLineChartViewDefaultEndPoint, kJBLineChartViewDefaultEndPoint);
+    gradient.endPoint = CGPointMake(kJBLineChartViewDefaultEndPoint, kJBLineChartViewDefaultStartPoint);
     return gradient;
 }
 
