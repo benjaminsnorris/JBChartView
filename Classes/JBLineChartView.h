@@ -25,17 +25,17 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineStyle){
 };
 
 /**
- * Current support for two line color styles: solid (default) and gradient.
+ *  Allows for two different gradient directions: vertical (default) and horizontal.
  */
-typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
+typedef NS_ENUM(NSInteger, JBLineChartViewLineGradientDirection){
     /**
-     *  Solid line and fill color.
+     *  Vertical gradient.
      */
-    JBLineChartViewLineColorStyleSolid,
+    JBLineChartViewLineGradientDirectionVertical,
     /**
-     *  Gradient line and fill color.
+     *  Horizontal gradient.
      */
-    JBLineChartViewLineColorStyleGradient
+    JBLineChartViewLineGradientDirectionHorizontal,
 };
 
 @protocol JBLineChartViewDataSource <JBChartViewDataSource>
@@ -166,7 +166,6 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
 
 /**
  *  Returns the color of particular line at lineIndex within the chart.
- *  When used together with lineChartView:gradientForLineAtIndex: the line color controls the alpha of the gradient.
  *
  *  Default: black color.
  *
@@ -178,21 +177,46 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
 - (UIColor *)lineChartView:(JBLineChartView *)lineChartView colorForLineAtLineIndex:(NSUInteger)lineIndex;
 
 /**
- *  Returns the gradient layer to be used for a particular line at lineIndex within the chart.
- *  Alpha of gradient is controlled by the color returned from lineChartView:colorForLineAtLineIndex:
+ *  Returns the start color that can be used in creating a gradient for the line at lineIndex within the chart.
+ *  Both startColor and endColor must be supplied for a gradient to be created.
  *
- *  Default: black to light gray.
+ *  Default: fall back to lineChartView:colorForLineAtLineIndex:
  *
  *  @param lineChartView    The line chart object requesting this information.
  *  @param lineIndex        An index number identifying a line in the chart.
  *
- *  @return The gradient layer to be used as a mask for the line in the chart.
+ *  @return The starting color to be used in a gradient for the line in the chart.
  */
-- (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView gradientForLineAtLineIndex:(NSUInteger)lineIndex;
+- (UIColor *)lineChartView:(JBLineChartView *)lineChartView startColorForGradientLineAtLineIndex:(NSUInteger)lineIndex;
+
+/**
+ *  Returns the middle color that can be used in creating a gradient for the line at lineIndex within the chart.
+ *  Both startColor and endColor must be supplied for a gradient to be created, but midColor is not necessary.
+ *
+ *  Default: fall back to lineChartView:colorForLineAtLineIndex:
+ *
+ *  @param lineChartView    The line chart object requesting this information.
+ *  @param lineIndex        An index number identifying a line in the chart.
+ *
+ *  @return The middle color to be used in a gradient for the line in the chart.
+ */
+- (UIColor *)lineChartView:(JBLineChartView *)lineChartView midColorForGradientLineAtLineIndex:(NSUInteger)lineIndex;
+
+/**
+ *  Returns the end color that can be used in creating a gradient for the line at lineIndex within the chart.
+ *  Both startColor and endColor must be supplied for a gradient to be created.
+ *
+ *  Default: fall back to lineChartView:colorForLineAtLineIndex:
+ *
+ *  @param lineChartView    The line chart object requesting this information.
+ *  @param lineIndex        An index number identifying a line in the chart.
+ *
+ *  @return The ending color to be used in a gradient for the line in the chart.
+ */
+- (UIColor *)lineChartView:(JBLineChartView *)lineChartView endColorForGradientLineAtLineIndex:(NSUInteger)lineIndex;
 
 /**
  *  Returns the fill color of particular line at lineIndex within the chart.
- *  When used together with lineChartView:fillGradientForLineAtIndex: the fill color controls the alpha of the gradient.
  *
  *  Default: clear color.
  *
@@ -204,17 +228,43 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
 - (UIColor *)lineChartView:(JBLineChartView *)lineChartView fillColorForLineAtLineIndex:(NSUInteger)lineIndex;
 
 /**
- *  Returns the gradient layer to be used for a fill of a particular line at lineIndex within the chart.
- *  Alpha of gradient is controlled by the color returned from lineChartView:fillColorForLineAtLineIndex:
+ *  Returns the start color for a gradient for the fill color of a line at lineIndex within the chart.
+ *  Both fillStartColor and fillEndColor must be supplied for a gradient to be created.
  *
- *  Default: white to light gray.
+ *  Default: fall back to colorForLineAtLineIndex:
  *
  *  @param lineChartView    The line chart object requesting this information.
  *  @param lineIndex        An index number identifying a line in the chart.
  *
- *  @return The fill color to show under a line in the chart.
+ *  @return The starting color to be used in a gradient for the line in the chart.
  */
-- (CAGradientLayer *)lineChartView:(JBLineChartView *)lineChartView fillGradientForLineAtLineIndex:(NSUInteger)lineIndex;
+- (UIColor *)lineChartView:(JBLineChartView *)lineChartView startFillColorForGradientLineAtLineIndex:(NSUInteger)lineIndex;
+
+/**
+ *  Returns the middle color for a gradient for the fill color of a line at lineIndex within the chart.
+ *  Both fillStartColor and fillEndColor must be supplied for a gradient to be created, but fillMidColor is not necessary.
+ *
+ *  Default: fall back to colorForLineAtLineIndex:
+ *
+ *  @param lineChartView    The line chart object requesting this information.
+ *  @param lineIndex        An index number identifying a line in the chart.
+ *
+ *  @return The middle color to be used in a gradient for the line in the chart.
+ */
+- (UIColor *)lineChartView:(JBLineChartView *)lineChartView midFillColorForGradientLineAtLineIndex:(NSUInteger)lineIndex;
+
+/**
+ *  Returns the end color for a gradient for the fill color of a line at lineIndex within the chart.
+ *  Both fillStartColor and fillEndColor must be supplied for a gradient to be created.
+ *
+ *  Default: fall back to colorForLineAtLineIndex:
+ *
+ *  @param lineChartView    The line chart object requesting this information.
+ *  @param lineIndex        An index number identifying a line in the chart.
+ *
+ *  @return The ending color to be used in a gradient for the line in the chart.
+ */
+- (UIColor *)lineChartView:(JBLineChartView *)lineChartView endFillColorForGradientLineAtLineIndex:(NSUInteger)lineIndex;
 
 /**
  *  Returns the color of a particular dot in a line at lineIndex within the chart.
@@ -363,17 +413,20 @@ typedef NS_ENUM(NSInteger, JBLineChartViewLineColorStyle){
 - (JBLineChartViewLineStyle)lineChartView:(JBLineChartView *)lineChartView lineStyleForLineAtLineIndex:(NSUInteger)lineIndex;
 
 /**
- *  Returns the line color style of a particular line at lineIndex within the chart.
- *  See JBLineChartViewLineColorStyle for line color style descriptions.
+ *  Returns the gradient direction of a particular line at lineIndex within the chart.
+ *  See JBLineChartViewLineGradientDirection for gradient direction descriptions.
+ *  This property is only used when implementing the following two methods:
+ *      - lineChartView:startColorForGradientLineAtLineIndex:
+ *      - lineChartView:endColorForGradientLineAtLineIndex:
  *
- *  Default: JBLineChartViewLineColorStyleSolid.
+ *  Default: JBLineChartViewLineGradientDirectionVertical.
  *
  *  @param lineChartView    The line chart object requesting this information.
  *  @param lineIndex        An index number identifying a line in the chart.
  *
- *  @return The line style to be used to draw a line in the chart.
+ *  @return The gradient direction to be used to draw a gradient for a line in the chart.
  */
-- (JBLineChartViewLineColorStyle)lineChartView:(JBLineChartView *)lineChartView lineColorStyleForLineAtLineIndex:(NSUInteger)lineIndex;
+- (JBLineChartViewLineGradientDirection)lineChartView:(JBLineChartView *)lineChartView lineGradientDirectionForLineAtLineIndex:(NSUInteger)lineIndex;
 
 @end
 
